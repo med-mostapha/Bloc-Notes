@@ -2,9 +2,16 @@ import 'package:bloc_notes/models/note.dart';
 import 'package:flutter/material.dart';
 
 class NoteCard extends StatelessWidget {
-  const NoteCard({super.key, required this.note});
+  const NoteCard({
+    super.key,
+    required this.note,
+    this.onLongPress,
+    this.onEdit,
+  });
 
   final Note note;
+  final VoidCallback? onEdit;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +29,14 @@ class NoteCard extends StatelessWidget {
         ],
       ),
       child: ListTile(
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, color: Colors.deepPurple),
+          onPressed: onEdit,
+        ),
+        // edit btn
+        onLongPress: onLongPress,
+        // delete btn
         minLeadingWidth: 10,
-
         title: Text(note.titre, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(
           note.contenu.length > 30
