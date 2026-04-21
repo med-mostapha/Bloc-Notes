@@ -2,7 +2,8 @@ import 'package:bloc_notes/models/note.dart';
 import 'package:flutter/material.dart';
 
 class CreatePage extends StatefulWidget {
-  const CreatePage({super.key});
+  final Note? noteToEdit;
+  const CreatePage({super.key, this.noteToEdit});
   @override
   State<CreatePage> createState() => _CreateState();
 }
@@ -12,6 +13,15 @@ class _CreateState extends State<CreatePage> {
 
   final TextEditingController _titreController = TextEditingController();
   final TextEditingController _contenuController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.noteToEdit != null) {
+      _titreController.text = widget.noteToEdit!.titre;
+      _contenuController.text = widget.noteToEdit!.contenu;
+    }
+  }
 
   @override
   void dispose() {
@@ -35,10 +45,12 @@ class _CreateState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isEditing = widget.noteToEdit != null;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title: Text("Create Note"),
+        title: Text(isEditing ? "Update" : "Create"),
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 22),
         centerTitle: true,
       ),
