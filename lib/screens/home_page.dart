@@ -1,5 +1,6 @@
 import 'package:bloc_notes/models/note.dart';
 import 'package:bloc_notes/screens/create_page.dart';
+import 'package:bloc_notes/screens/detail_page.dart';
 import 'package:bloc_notes/widgets/note_card.dart';
 import 'package:flutter/material.dart';
 
@@ -20,24 +21,14 @@ class _HomeState extends State<HomePage> {
         id: '1',
         titre: 'Shopping List 🛒',
         contenu: 'Buy milk, eggs, bread, and some fruits.',
+        couleur: '#FFE082',
         dateCreation: DateTime.now(),
       ),
       Note(
         id: '2',
         titre: 'Flutter Study 💻',
         contenu: 'Practice Bloc state management and Git commits.',
-        dateCreation: DateTime.now(),
-      ),
-      Note(
-        id: '3',
-        titre: 'Gym Session 💪',
-        contenu: 'Leg day at 6:00 PM. Don\'t forget the water bottle!',
-        dateCreation: DateTime.now(),
-      ),
-      Note(
-        id: '4',
-        titre: 'Meeting Notes 📝',
-        contenu: 'Discuss the new project requirements with the team.',
+        couleur: '#FFAB91',
         dateCreation: DateTime.now(),
       ),
     ];
@@ -72,7 +63,7 @@ class _HomeState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes"),
+        title: Text("Notes (${notes.length})"),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
         titleTextStyle: TextStyle(
@@ -85,32 +76,59 @@ class _HomeState extends State<HomePage> {
       body: Padding(
         padding: EdgeInsets.all(10),
 
-        child: ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return NoteCard(
-              note: notes[index],
-              onLongPress: () => _deleteNote(index),
-              onEdit: () async {
-                final updatedNote = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CreatePage(noteToEdit: notes[index]),
-                  ),
-                );
+        child: notes.isEmpty
+            ? const Center(child: Text("Aucune note"))
+            : Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: ListView.separated(
+                  itemBuilder: (BuildContext context, int index) {
+                    return NoteCard(
+                      note: notes[index],
+                      // delete action
+                      onLongPress: () => _deleteNote(index),
+                      // edit action
+                      onEdit: () async {
+                        final updatedNote = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CreatePage(noteToEdit: notes[index]),
+                          ),
+                        );
 
-                if (updatedNote != null) {
-                  setState(() {
-                    notes[index] = updatedNote;
-                  });
-                }
-              },
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return SizedBox(height: 10);
-          },
-          itemCount: notes.length,
-        ),
+                        if (updatedNote != null) {
+                          setState(() {
+                            notes[index] = updatedNote;
+                          });
+                        }
+                      },
+                      // show detail
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailPage(note: notes[index]),
+                          ),
+                        );
+
+                        if (result == "delete") {
+                          setState(() {
+                            notes.removeAt(index);
+                          });
+                        } else if (result is Note) {
+                          setState(() {
+                            notes[index] = result;
+                          });
+                        }
+                      },
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return SizedBox(height: 10);
+                  },
+                  itemCount: notes.length,
+                ),
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,

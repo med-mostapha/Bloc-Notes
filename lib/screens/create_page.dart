@@ -14,12 +14,15 @@ class _CreateState extends State<CreatePage> {
   final TextEditingController _titreController = TextEditingController();
   final TextEditingController _contenuController = TextEditingController();
 
+  String selectedColor = '#FFE082';
+
   @override
   void initState() {
     super.initState();
     if (widget.noteToEdit != null) {
       _titreController.text = widget.noteToEdit!.titre;
       _contenuController.text = widget.noteToEdit!.contenu;
+      selectedColor = widget.noteToEdit!.couleur;
     }
   }
 
@@ -30,13 +33,15 @@ class _CreateState extends State<CreatePage> {
     super.dispose();
   }
 
-  void _CreateNote() {
+  void _createNote() {
     if (formstate.currentState!.validate()) {
       final newNote = Note(
-        id: DateTime.now().toString(),
+        id: widget.noteToEdit?.id ?? DateTime.now().toString(),
         titre: _titreController.text.trim(),
         contenu: _contenuController.text.trim(),
-        dateCreation: DateTime.now(),
+        couleur: selectedColor,
+        dateCreation: widget.noteToEdit?.dateCreation ?? DateTime.now(),
+        dateModification: widget.noteToEdit != null ? DateTime.now() : null,
       );
 
       Navigator.pop(context, newNote);
@@ -91,14 +96,50 @@ class _CreateState extends State<CreatePage> {
 
               SizedBox(height: 20),
 
+              Row(
+                children: [
+                  buildColor('#FFE082'),
+                  buildColor('#FFAB91'),
+                  buildColor('#CF93D9'),
+                  buildColor('#80DEEA'),
+                ],
+              ),
+
+              SizedBox(height: 20),
+
               MaterialButton(
-                onPressed: () => _CreateNote(),
+                onPressed: () => _createNote(),
                 minWidth: 300,
                 textColor: Colors.white,
                 color: Colors.deepPurple,
                 child: Text(isEditing ? "Update" : "Create"),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildColor(String colorHex) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedColor = colorHex;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          color: Color(int.parse(colorHex.replaceFirst('#', '0xff'))),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: selectedColor == colorHex
+                ? Colors.black
+                : Colors.transparent,
+            width: 2,
           ),
         ),
       ),

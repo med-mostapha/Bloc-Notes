@@ -7,9 +7,11 @@ class NoteCard extends StatelessWidget {
     required this.note,
     this.onLongPress,
     this.onEdit,
+    this.onTap,
   });
 
   final Note note;
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onLongPress;
 
@@ -18,7 +20,13 @@ class NoteCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.circular(10),
+        border: Border(
+          left: BorderSide(
+            color: Color(int.parse(note.couleur.replaceFirst('#', '0xff'))),
+            width: 5,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color.fromARGB(255, 226, 226, 226),
@@ -33,16 +41,28 @@ class NoteCard extends StatelessWidget {
           icon: const Icon(Icons.edit, color: Colors.deepPurple),
           onPressed: onEdit,
         ),
+        // show dtalis
+        onTap: onTap,
         // edit btn
         onLongPress: onLongPress,
         // delete btn
         minLeadingWidth: 10,
         title: Text(note.titre, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(
-          note.contenu.length > 80
-              ? note.contenu.substring(0, 80)
-              : note.contenu,
-          style: TextStyle(color: Colors.grey),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              note.contenu.length > 80
+                  ? note.contenu.substring(0, 80)
+                  : note.contenu,
+              style: TextStyle(color: Colors.grey),
+            ),
+            SizedBox(height: 4),
+            Text(
+              "${note.dateCreation.day}/${note.dateCreation.month}/${note.dateCreation.year}",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
         ),
       ),
     );

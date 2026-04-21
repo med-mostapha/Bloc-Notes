@@ -2,6 +2,7 @@ class Note {
   final String id;
   final String titre;
   final String contenu;
+  final String couleur;
   final DateTime dateCreation;
   final DateTime? dateModification;
 
@@ -11,5 +12,6 @@ class Note {
     required this.contenu,
     required this.dateCreation,
     this.dateModification,
+    required this.couleur,
   });
 }
