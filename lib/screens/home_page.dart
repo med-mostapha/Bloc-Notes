@@ -18,26 +18,26 @@ class _HomeState extends State<HomePage> {
     notes = [
       Note(
         id: '1',
-        titre: '1',
-        contenu: 'Buy milk and eggs',
+        titre: 'Shopping List 🛒',
+        contenu: 'Buy milk, eggs, bread, and some fruits.',
         dateCreation: DateTime.now(),
       ),
       Note(
-        id: '1',
-        titre: '2',
-        contenu: 'Buy milk and eggs',
+        id: '2',
+        titre: 'Flutter Study 💻',
+        contenu: 'Practice Bloc state management and Git commits.',
         dateCreation: DateTime.now(),
       ),
       Note(
-        id: '1',
-        titre: '3',
-        contenu: 'Buy milk and eggs',
+        id: '3',
+        titre: 'Gym Session 💪',
+        contenu: 'Leg day at 6:00 PM. Don\'t forget the water bottle!',
         dateCreation: DateTime.now(),
       ),
       Note(
-        id: '1',
-        titre: '4',
-        contenu: 'Buy milk and eggs',
+        id: '4',
+        titre: 'Meeting Notes 📝',
+        contenu: 'Discuss the new project requirements with the team.',
         dateCreation: DateTime.now(),
       ),
     ];
@@ -51,7 +51,7 @@ class _HomeState extends State<HomePage> {
         content: const Text("Are you sure you want to delete this note?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // إغلاق النافذة بدون حذف
+            onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
           TextButton(
@@ -59,7 +59,7 @@ class _HomeState extends State<HomePage> {
               setState(() {
                 notes.removeAt(index);
               });
-              Navigator.pop(context); // إغلاق النافذة بعد الحذف
+              Navigator.pop(context);
             },
             child: const Text("Delete", style: TextStyle(color: Colors.red)),
           ),
@@ -81,8 +81,10 @@ class _HomeState extends State<HomePage> {
           fontWeight: FontWeight.w500,
         ),
       ),
+
       body: Padding(
         padding: EdgeInsets.all(10),
+
         child: ListView.separated(
           itemBuilder: (BuildContext context, int index) {
             return NoteCard(

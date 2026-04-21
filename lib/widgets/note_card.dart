@@ -39,8 +39,8 @@ class NoteCard extends StatelessWidget {
         minLeadingWidth: 10,
         title: Text(note.titre, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(
-          note.contenu.length > 30
-              ? note.contenu.substring(0, 30)
+          note.contenu.length > 80
+              ? note.contenu.substring(0, 80)
               : note.contenu,
           style: TextStyle(color: Colors.grey),
         ),

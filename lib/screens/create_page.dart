@@ -96,7 +96,7 @@ class _CreateState extends State<CreatePage> {
                 minWidth: 300,
                 textColor: Colors.white,
                 color: Colors.deepPurple,
-                child: Text("Create"),
+                child: Text(isEditing ? "Update" : "Create"),
               ),
             ],
           ),
