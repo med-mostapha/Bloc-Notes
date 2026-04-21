@@ -18,11 +18,54 @@ class _HomeState extends State<HomePage> {
     notes = [
       Note(
         id: '1',
-        titre: 'Shopping',
+        titre: '1',
+        contenu: 'Buy milk and eggs',
+        dateCreation: DateTime.now(),
+      ),
+      Note(
+        id: '1',
+        titre: '2',
+        contenu: 'Buy milk and eggs',
+        dateCreation: DateTime.now(),
+      ),
+      Note(
+        id: '1',
+        titre: '3',
+        contenu: 'Buy milk and eggs',
+        dateCreation: DateTime.now(),
+      ),
+      Note(
+        id: '1',
+        titre: '4',
         contenu: 'Buy milk and eggs',
         dateCreation: DateTime.now(),
       ),
     ];
+  }
+
+  void _deleteNote(int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Note"),
+        content: const Text("Are you sure you want to delete this note?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // إغلاق النافذة بدون حذف
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                notes.removeAt(index);
+              });
+              Navigator.pop(context); // إغلاق النافذة بعد الحذف
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -42,7 +85,24 @@ class _HomeState extends State<HomePage> {
         padding: EdgeInsets.all(10),
         child: ListView.separated(
           itemBuilder: (BuildContext context, int index) {
-            return NoteCard(note: notes[index]);
+            return NoteCard(
+              note: notes[index],
+              onLongPress: () => _deleteNote(index),
+              onEdit: () async {
+                final updatedNote = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CreatePage(noteToEdit: notes[index]),
+                  ),
+                );
+
+                if (updatedNote != null) {
+                  setState(() {
+                    notes[index] = updatedNote;
+                  });
+                }
+              },
+            );
           },
           separatorBuilder: (BuildContext context, int index) {
             return SizedBox(height: 10);
