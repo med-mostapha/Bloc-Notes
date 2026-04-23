@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bloc_notes/models/note.dart';
-import 'package:bloc_notes/screens/create_page.dart';
 
 class DetailPage extends StatelessWidget {
   final Note note;
@@ -22,27 +21,6 @@ class DetailPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         backgroundColor: Colors.deepPurple,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final updatedNote = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => CreatePage(noteToEdit: note)),
-              );
-
-              if (updatedNote != null) {
-                Navigator.pop(context, updatedNote);
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              Navigator.pop(context, "delete");
-            },
-          ),
-        ],
       ),
       body: Container(
         width: double.infinity,

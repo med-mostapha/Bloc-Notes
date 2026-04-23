@@ -1,138 +1,73 @@
 import 'package:bloc_notes/models/note.dart';
+import 'package:bloc_notes/providers/note_provider.dart';
 import 'package:bloc_notes/screens/create_page.dart';
 import 'package:bloc_notes/screens/detail_page.dart';
 import 'package:bloc_notes/widgets/note_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  @override
-  State<HomePage> createState() => _HomeState();
-}
 
-class _HomeState extends State<HomePage> {
-  List<Note> notes = [];
-
-  @override
-  void initState() {
-    super.initState();
-    notes = [
-      Note(
-        id: '1',
-        titre: 'Shopping List 🛒',
-        contenu: 'Buy milk, eggs, bread, and some fruits.',
-        couleur: '#FFE082',
-        dateCreation: DateTime.now(),
-      ),
-      Note(
-        id: '2',
-        titre: 'Flutter Study 💻',
-        contenu: 'Practice Bloc state management and Git commits.',
-        couleur: '#FFAB91',
-        dateCreation: DateTime.now(),
-      ),
-    ];
-  }
-
-  void _deleteNote(int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Note"),
-        content: const Text("Are you sure you want to delete this note?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                notes.removeAt(index);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+  void _deleteNote(BuildContext context, int index) {
+    context.read<NoteProvider>().deleteNote(index);
   }
 
   @override
   Widget build(BuildContext context) {
+    // final List<Note> notes = [];
+    final notes = context.watch<NoteProvider>().notes;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Notes (${notes.length})"),
-        centerTitle: true,
         backgroundColor: Colors.deepPurple,
-        titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.w500,
-        ),
+        centerTitle: true,
       ),
+      body: notes.isEmpty
+          ? const Center(child: Text("Aucune note"))
+          : ListView.separated(
+              padding: const EdgeInsets.all(10),
+              itemCount: notes.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                return NoteCard(
+                  note: notes[index],
 
-      body: Padding(
-        padding: EdgeInsets.all(10),
+                  onLongPress: () => _deleteNote(context, index),
 
-        child: notes.isEmpty
-            ? const Center(child: Text("Aucune note"))
-            : Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: ListView.separated(
-                  itemBuilder: (BuildContext context, int index) {
-                    return NoteCard(
-                      note: notes[index],
-                      // delete action
-                      onLongPress: () => _deleteNote(index),
-                      // edit action
-                      onEdit: () async {
-                        final updatedNote = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                CreatePage(noteToEdit: notes[index]),
-                          ),
-                        );
-
-                        if (updatedNote != null) {
-                          setState(() {
-                            notes[index] = updatedNote;
-                          });
-                        }
-                      },
-                      // show detail
-                      onTap: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailPage(note: notes[index]),
-                          ),
-                        );
-
-                        if (result == "delete") {
-                          setState(() {
-                            notes.removeAt(index);
-                          });
-                        } else if (result is Note) {
-                          setState(() {
-                            notes[index] = result;
-                          });
-                        }
-                      },
+                  onEdit: () async {
+                    final updated = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CreatePage(noteToEdit: notes[index]),
+                      ),
                     );
+
+                    if (updated != null) {
+                      context.read<NoteProvider>().updateNote(index, updated);
+                    }
                   },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(height: 10);
+
+                  onTap: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailPage(note: notes[index]),
+                      ),
+                    );
+
+                    if (result == "delete") {
+                      context.read<NoteProvider>().deleteNote(index);
+                    } else if (result is Note) {
+                      context.read<NoteProvider>().updateNote(index, result);
+                    }
                   },
-                  itemCount: notes.length,
-                ),
-              ),
-      ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
-        child: Icon(Icons.add, color: Colors.white),
         onPressed: () async {
           final note = await Navigator.push(
             context,
@@ -140,11 +75,10 @@ class _HomeState extends State<HomePage> {
           );
 
           if (note != null) {
-            setState(() {
-              notes.add(note);
-            });
+            context.read<NoteProvider>().addNote(note);
           }
         },
+        child: const Icon(Icons.add),
       ),
     );
   }

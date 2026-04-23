@@ -36,6 +36,7 @@ class NoteCard extends StatelessWidget {
           ),
         ],
       ),
+
       child: ListTile(
         trailing: IconButton(
           icon: const Icon(Icons.edit, color: Colors.deepPurple),
@@ -51,12 +52,7 @@ class NoteCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              note.contenu.length > 80
-                  ? note.contenu.substring(0, 80)
-                  : note.contenu,
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(note.contenu, style: TextStyle(color: Colors.grey)),
             SizedBox(height: 4),
             Text(
               "${note.dateCreation.day}/${note.dateCreation.month}/${note.dateCreation.year}",
