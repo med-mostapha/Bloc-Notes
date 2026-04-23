@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import '../models/note.dart';
+import '../data/note_repository.dart';
+import '../data/local_note_repository.dart';
 
 class NoteProvider extends ChangeNotifier {
-  final List<Note> _notes = [
-    Note(
-      id: '1',
-      titre: 'Test Note',
-      contenu: 'This is a test note',
-      couleur: '#FFE082',
-      dateCreation: DateTime.now(),
-    ),
-  ];
+  final NoteRepository _repository = LocalNoteRepository();
 
-  List<Note> get notes => List.unmodifiable(_notes);
+  List<Note> _notes = [];
 
-  void addNote(Note note) {
-    _notes.add(note);
+  List<Note> get notes => _notes;
+
+  NoteProvider() {
+    loadNotes();
+  }
+
+  Future<void> loadNotes() async {
+    _notes = await _repository.getNotes();
     notifyListeners();
   }
 
-  void updateNote(String id, Note note) {
-    final index = _notes.indexWhere((n) => n.id == id);
-    if (index != -1) {
-      _notes[index] = note;
-      notifyListeners();
-    }
+  Future<void> addNote(Note note) async {
+    await _repository.addNote(note);
+    await loadNotes();
   }
 
-  void deleteNote(String id) {
-    _notes.removeWhere((n) => n.id == id);
-    notifyListeners();
+  Future<void> updateNote(String id, Note note) async {
+    await _repository.updateNote(id, note);
+    await loadNotes();
+  }
+
+  Future<void> deleteNote(String id) async {
+    await _repository.deleteNote(id);
+    await loadNotes();
   }
 }
