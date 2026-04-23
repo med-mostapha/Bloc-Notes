@@ -102,6 +102,7 @@ class _CreateState extends State<CreatePage> {
                   buildColor('#FFAB91'),
                   buildColor('#CF93D9'),
                   buildColor('#80DEEA'),
+                  buildColor('#000000'),
                 ],
               ),
 
