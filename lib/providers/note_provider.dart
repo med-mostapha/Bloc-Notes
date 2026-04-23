@@ -12,20 +12,23 @@ class NoteProvider extends ChangeNotifier {
     ),
   ];
 
-  List<Note> get notes => _notes;
+  List<Note> get notes => List.unmodifiable(_notes);
 
   void addNote(Note note) {
     _notes.add(note);
     notifyListeners();
   }
 
-  void updateNote(int index, Note note) {
-    _notes[index] = note;
-    notifyListeners();
+  void updateNote(String id, Note note) {
+    final index = _notes.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      _notes[index] = note;
+      notifyListeners();
+    }
   }
 
-  void deleteNote(int index) {
-    _notes.removeAt(index);
+  void deleteNote(String id) {
+    _notes.removeWhere((n) => n.id == id);
     notifyListeners();
   }
 }

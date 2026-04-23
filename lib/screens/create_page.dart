@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class CreatePage extends StatefulWidget {
   final Note? noteToEdit;
   const CreatePage({super.key, this.noteToEdit});
+
   @override
   State<CreatePage> createState() => _CreateState();
 }

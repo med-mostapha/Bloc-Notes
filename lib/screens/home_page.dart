@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  void _deleteNote(BuildContext context, int index) {
-    context.read<NoteProvider>().deleteNote(index);
+  void _deleteNote(BuildContext context, String id) {
+    context.read<NoteProvider>().deleteNote(id);
   }
 
   @override
@@ -21,46 +21,45 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Notes (${notes.length})"),
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
       ),
+
       body: notes.isEmpty
-          ? const Center(child: Text("Aucune note"))
+          ? const Center(
+              child: Text(
+                "Aucune note",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            )
           : ListView.separated(
               padding: const EdgeInsets.all(10),
               itemCount: notes.length,
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
+                final note = notes[index];
                 return NoteCard(
-                  note: notes[index],
+                  note: note,
 
-                  onLongPress: () => _deleteNote(context, index),
-
-                  onEdit: () async {
-                    final updated = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CreatePage(noteToEdit: notes[index]),
-                      ),
-                    );
-
-                    if (updated != null) {
-                      context.read<NoteProvider>().updateNote(index, updated);
-                    }
-                  },
+                  // onLongPress: () => _deleteNote(context, note.id),
+                  onDelete: () => _deleteNote(context, note.id),
 
                   onTap: () async {
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => DetailPage(note: notes[index]),
-                      ),
+                      MaterialPageRoute(builder: (_) => DetailPage(note: note)),
                     );
 
-                    if (result == "delete") {
-                      context.read<NoteProvider>().deleteNote(index);
-                    } else if (result is Note) {
-                      context.read<NoteProvider>().updateNote(index, result);
+                    if (result != null && result is Note) {
+                      context.read<NoteProvider>().updateNote(
+                        notes[index].id,
+                        result,
+                      );
                     }
                   },
                 );
@@ -68,6 +67,7 @@ class HomePage extends StatelessWidget {
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
+
         onPressed: () async {
           final note = await Navigator.push(
             context,
@@ -78,7 +78,7 @@ class HomePage extends StatelessWidget {
             context.read<NoteProvider>().addNote(note);
           }
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

@@ -6,13 +6,13 @@ class NoteCard extends StatelessWidget {
     super.key,
     required this.note,
     this.onLongPress,
-    this.onEdit,
+    this.onDelete,
     this.onTap,
   });
 
   final Note note;
   final VoidCallback? onTap;
-  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   final VoidCallback? onLongPress;
 
   @override
@@ -39,8 +39,8 @@ class NoteCard extends StatelessWidget {
 
       child: ListTile(
         trailing: IconButton(
-          icon: const Icon(Icons.edit, color: Colors.deepPurple),
-          onPressed: onEdit,
+          icon: const Icon(Icons.delete, color: Colors.deepPurple),
+          onPressed: onDelete,
         ),
         // show dtalis
         onTap: onTap,
