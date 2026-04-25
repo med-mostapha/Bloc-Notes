@@ -1,22 +1,17 @@
-import 'package:bloc_notes/models/note.dart';
 import 'package:bloc_notes/providers/note_provider.dart';
 import 'package:bloc_notes/screens/create_page.dart';
-import 'package:bloc_notes/screens/detail_page.dart';
 import 'package:bloc_notes/widgets/note_card.dart';
+import 'package:bloc_notes/widgets/skeletons/note_card_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  void _deleteNote(BuildContext context, String id) {
-    context.read<NoteProvider>().deleteNote(id);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // final List<Note> notes = [];
-    final notes = context.watch<NoteProvider>().notes;
+    final provider = context.watch<NoteProvider>();
+    final notes = provider.notes;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +25,14 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
       ),
 
-      body: notes.isEmpty
+      body: provider.isLoading
+          ? ListView.separated(
+              padding: const EdgeInsets.all(10),
+              itemCount: 2,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) => const NoteCardSkeleton(),
+            )
+          : notes.isEmpty
           ? const Center(
               child: Text(
                 "Aucune note",
@@ -43,26 +45,29 @@ class HomePage extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final note = notes[index];
-                return NoteCard(
-                  note: note,
+                return provider.isLoading
+                    ? NoteCardSkeleton()
+                    : NoteCard(
+                        note: note,
 
-                  // onLongPress: () => _deleteNote(context, note.id),
-                  onDelete: () => _deleteNote(context, note.id),
+                        onDelete: () =>
+                            context.read<NoteProvider>().deleteNote(note.id),
 
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => DetailPage(note: note)),
-                    );
+                        onTap: () {},
+                        // () async {
+                        //   final result = await Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(builder: (_) => DetailPage(note: note)),
+                        //   );
 
-                    if (result != null && result is Note) {
-                      context.read<NoteProvider>().updateNote(
-                        notes[index].id,
-                        result,
+                        //   if (result != null && result is Note) {
+                        //     context.read<NoteProvider>().updateNote(
+                        //       notes[index].id,
+                        //       result,
+                        //     );
+                        //   }
+                        // },
                       );
-                    }
-                  },
-                );
               },
             ),
       floatingActionButton: FloatingActionButton(
