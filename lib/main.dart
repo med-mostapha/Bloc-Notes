@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'data/firebase_note_repository.dart';
 import 'firebase_options.dart';
 import 'providers/note_provider.dart';
 import 'screens/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    ChangeNotifierProvider(create: (_) => NoteProvider(), child: const MyApp()),
+    ChangeNotifierProvider(
+      create: (_) => NoteProvider(FirebaseNoteRepository()),
+      child: const MyApp(),
+    ),
   );
 }
 

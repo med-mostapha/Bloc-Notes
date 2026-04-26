@@ -49,7 +49,7 @@ class _DetailState extends State<DetailPage> {
                   onPressed: () {
                     final updatedNote = Note(
                       id: widget.note.id,
-                      titre: widget.note.titre,
+                      titre: _titreController.text,
                       contenu: _contenuController.text,
                       couleur: widget.note.couleur,
                       dateCreation: widget.note.dateCreation,
@@ -82,6 +82,13 @@ class _DetailState extends State<DetailPage> {
                 border: OutlineInputBorder(),
               ),
               controller: _titreController,
+              onChanged: (value) {
+                setState(() {
+                  showSaveButton =
+                      (value != oldTitre) ||
+                      (_contenuController.text != oldMessage);
+                });
+              },
             ),
 
             const SizedBox(height: 20),

@@ -1,7 +1,7 @@
 import 'package:bloc_notes/models/note.dart';
 
 abstract class NoteRepository {
-  Future<List<Note>> getNotes();
+  Stream<List<Note>> watchNotes();
 
   Future<void> addNote(Note note);
 

@@ -1,45 +1,48 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../models/note.dart';
 import '../data/note_repository.dart';
-import '../data/local_note_repository.dart';
 
 class NoteProvider extends ChangeNotifier {
-  final NoteRepository _repository = LocalNoteRepository();
+  final NoteRepository _repository;
 
   List<Note> _notes = [];
-  bool _isLoading = false;
   String? _error;
+  bool _isLoading = true;
 
   List<Note> get notes => _notes;
-  bool get isLoading => _isLoading;
   String? get error => _error;
+  bool get isLoading => _isLoading;
 
-  NoteProvider() {
-    loadNotes();
+  // for stream cancle
+  late StreamSubscription _subscription;
+
+  NoteProvider(this._repository) {
+    _subscription = _repository.watchNotes().listen(
+      (notes) {
+        _notes = notes;
+        _isLoading = false;
+        notifyListeners();
+      },
+      onError: (e) {
+        _error = e.toString();
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
   }
 
-  Future<void> loadNotes() async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      // delete this in production.
-      await Future.delayed(const Duration(seconds: 5));
-
-      _notes = await _repository.getNotes();
-    } catch (e) {
-      _error = "Failed to load notes";
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+  // cancle stream
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   Future<void> addNote(Note note) async {
     try {
       await _repository.addNote(note);
-      await loadNotes();
     } catch (e) {
       _error = "Failed to add note";
       notifyListeners();
@@ -49,7 +52,6 @@ class NoteProvider extends ChangeNotifier {
   Future<void> updateNote(String id, Note note) async {
     try {
       await _repository.updateNote(id, note);
-      await loadNotes();
     } catch (e) {
       _error = "Failed to update note";
       notifyListeners();
@@ -59,7 +61,6 @@ class NoteProvider extends ChangeNotifier {
   Future<void> deleteNote(String id) async {
     try {
       await _repository.deleteNote(id);
-      await loadNotes();
     } catch (e) {
       _error = "Failed to delete note";
       notifyListeners();
